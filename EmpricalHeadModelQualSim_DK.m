@@ -1,6 +1,6 @@
 clear, format compact,close all
-misspec=1;
-extNoise=0; %  =1?
+misspec=.5;
+extNoise=2; %  =1?
 for N=5:100 % number of independent electrodes and time points
     F=randn(3,N); % the true forward model for two sources
     T=randn(3,N); % the two true temporal response
@@ -24,9 +24,11 @@ axis([1 100 0 1]); hold on
 xlabel('number of electrode/patches and time points')
 ylabel('correlation')
 title('Correlations of estimated time function to true')
-subplot(1,2,2); plot(N,Corall(N,:));hold on
+subplot(1,2,2); plot(N,Corall(N,:),'linewidth',1.5);hold on
 xlabel('number of electrode/patches and time points')
 ylabel('correlation');axis([1 100 0 1]);
+legend('The BEM', 'Empirical','2ndIteration', 'location', 'southeast')
+
 title('Correlations of estimated forward model to true')
 %% Use the empirical head model for a single patch (smallish N)
 for N=1:30,   %NOTE THAT THIS IS BASED ON THE SAME NOISE!
@@ -36,9 +38,10 @@ for N=1:30,   %NOTE THAT THIS IS BASED ON THE SAME NOISE!
 end
 N=1:30;
 subplot(1,2,1);plot(N,CorPatchT(N),'k','linewidth',3);
-
+legend('usingBEM', 'Empirical','fixednoise', 'location', 'southeast')
+return
 %% Use the empirical head model for a single patch (smallish N)
-Nelec = 1; % Let's just say there are 25 electrodes
+Nelec = 25; % Let's just say there are 25 electrodes
 Npatch = 4; % And there are 4 patches we think have same time function
 
 % Get Tcorr for empirical head model
@@ -48,7 +51,6 @@ for iPatch = 1:Npatch
     Cor=corrcoef([T(1,:)' T1Patch(1,:)']);
     CorPatchTemp(iPatch,:)=Cor(1,2);
 end
-
 % Get Tcorr for BEM head model
 for iPatch = 1:Npatch
     ep = (1:Nelec)+(Nelec*(iPatch-1));
